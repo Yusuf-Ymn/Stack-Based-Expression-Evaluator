@@ -3,52 +3,51 @@
 #include <cctype>
 using namespace std;
 
-int islemOnceligi(char op) {    //Operatörleri kontrol ederken iþlem önceliði sýrasýný daha rahat kontrol etmek için
+int islemOnceligi(char op) {
     if (op == '+' || op == '-') return 1;
     if (op == '*' || op == '/') return 2;
     return 0;
 }
 
-// Infix to Postfix fonksiyonu
+
 string Infix2Postfix(string& s) {
     string result;
     stack<char> postFix;
     int resultIndex = 0;
 
     for (int i = 0; i < s.size(); i++) {
-        if ((s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') && postFix.empty()) { //stack boþsa ve operatör eklemek istiyorsan, operatörü pushla.
+        if ((s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') && postFix.empty()) { 
             postFix.push(s[i]);
         }
-        else if ((s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') && !postFix.empty()) {//Stack boþ deðilse, stack'teki operatör ile stringdeki operatörü karþýlaþtýr. Stack'teki operatörün iþlem önceliðinde daha önde veya eþit olduðu sürece, stack'ten result'a at. Stack boþalýrsa stringdeki operatörü stack'e pushla.
-            while (!postFix.empty() && islemOnceligi(s[i]) <= islemOnceligi(postFix.top())) {
+        else if ((s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') && !postFix.empty()) {
                 result += postFix.top();
                 postFix.pop();
-                result += ' ';  // Operatörden sonra boþluk býrak
+                result += ' ';
             }
             postFix.push(s[i]);
         }
-        else if (s[i] == '(') { // parantez aç görürsen sadece pushla.
+        else if (s[i] == '(') {
             postFix.push(s[i]);
         }
-        else if (s[i] == ')') { //parantez kapatma iþareti görürsen stackte '(' iþareti görene kadar pop'la.
+        else if (s[i] == ')') {
             while (postFix.top() != '(') {
                 result += postFix.top();
                 postFix.pop();
                 result += ' ';
             }
-            postFix.pop(); // Stackte kalan parantez açma iþaretini pop'la
+            postFix.pop();
         }
-        else if (isdigit(s[i])) { // Sayý görürsen
+        else if (isdigit(s[i])) { // SayÃ½ gÃ¶rÃ¼rsen
             while (i < s.size() && isdigit(s[i])) {
                 result += s[i];
                 i++;
             }
-            result += ' '; // Tüm basamaklarý yazdýktan sonra boþluk býrak.
-            i--; // Döngü sonunda i'yi artýrmamak için geri al
+            result += ' ';
+            i--;
         }
     }
 
-    // Stack'teki operatörleri boþalt
+    
     while (!postFix.empty()) {
         result += postFix.top();
         postFix.pop();
@@ -59,25 +58,20 @@ string Infix2Postfix(string& s) {
 }
 
 
-
-///----------------------------------------------------------------------------------
-/// Given a string in post-fix notation, evaluates it and returns the result
-/// 
-// Postfix ifadesini deðerlendiren fonksiyon
 int EvaluatePostfixExpression(string& s) {
     stack<int> evalStack;
     int i = 0;
 
     while (i < s.size()) {
-        if (isdigit(s[i])) {  // Sayýysa
+        if (isdigit(s[i])) {
             int num = 0;
-            while (i < s.size() && isdigit(s[i])) { // Tam sayýyý oluþtur
+            while (i < s.size() && isdigit(s[i])) {
                 num = num * 10 + (s[i] - '0');
                 i++;
             }
-            evalStack.push(num);  // Yýðýna ekle
+            evalStack.push(num);
         }
-        else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {  // Operatörse
+        else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {
             int b = evalStack.top(); evalStack.pop();
             int a = evalStack.top(); evalStack.pop();
 
@@ -87,10 +81,10 @@ int EvaluatePostfixExpression(string& s) {
             else if (s[i] == '*') result = a * b;
             else if (s[i] == '/') result = a / b;
 
-            evalStack.push(result);  // Sonucu yýðýna ekle
+            evalStack.push(result);  // Sonucu yÃ½Ã°Ã½na ekle
         }
-        i++;  // Ýlerle
+        i++;  // Ãlerle
     }
 
-    return evalStack.top();  // Yýðýnýn tepesindeki deðer sonucu verir
+    return evalStack.top();  // YÃ½Ã°Ã½nÃ½n tepesindeki deÃ°er sonucu verir
 }
